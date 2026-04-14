@@ -1,0 +1,513 @@
+.page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 24px;
+}
+
+.grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 214, 0, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 214, 0, 0.03) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(ellipse 80% 80% at 50% 30%, black 10%, transparent 100%);
+}
+
+.container {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 560px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Top bar */
+.topBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.backBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--text-dim);
+  font-weight: 500;
+  padding: 6px 0;
+  transition: color 0.15s;
+}
+
+.backBtn:hover {
+  color: var(--text);
+}
+
+.logoMini {
+  opacity: 0.7;
+}
+
+.stepCounter {
+  font-size: 13px;
+  color: var(--text-dim);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Progress bar */
+.progressOuter {
+  height: 3px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: #FFD600;
+  border-radius: 2px;
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0 8px rgba(255, 214, 0, 0.5);
+}
+
+/* Step content */
+.stepContent {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  animation: fadeSlideIn 0.25s ease;
+}
+
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Step header */
+.stepHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.stepBadge {
+  font-size: 11px;
+  font-weight: 700;
+  color: #FFD600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.stepTitle {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.stepSub {
+  font-size: 14px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+/* Fields */
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.input {
+  width: 100%;
+  padding: 13px 16px;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-size: 15px;
+  transition: all 0.15s ease;
+  -moz-appearance: textfield;
+}
+
+.input::-webkit-outer-spin-button,
+.input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+
+.input::placeholder {
+  color: var(--text-dim);
+}
+
+.input:hover {
+  border-color: var(--border-hover);
+}
+
+.input:focus {
+  outline: none;
+  border-color: rgba(255, 214, 0, 0.5);
+  box-shadow: 0 0 0 3px rgba(255, 214, 0, 0.08);
+}
+
+.inputUnit {
+  position: relative;
+}
+
+.inputUnit .input {
+  padding-right: 48px;
+}
+
+.unit {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 13px;
+  color: var(--text-dim);
+  font-weight: 500;
+  pointer-events: none;
+}
+
+/* Grid layouts */
+.triGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.twoGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.cardGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+/* Option cards (objective, equipment) */
+.optionCard {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 16px;
+  background: var(--bg-input);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  text-align: left;
+  transition: all 0.15s ease;
+  cursor: pointer;
+}
+
+.optionCard:hover {
+  border-color: var(--border-hover);
+  background: #1f1f1f;
+}
+
+.optionCardActive {
+  border-color: #FFD600 !important;
+  background: rgba(255, 214, 0, 0.06) !important;
+  box-shadow: 0 0 0 1px rgba(255, 214, 0, 0.2);
+}
+
+.optionIcon {
+  font-size: 22px;
+  line-height: 1;
+}
+
+.optionLabel {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.optionDesc {
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+/* List cards (level) */
+.listGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.listCard {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  background: var(--bg-input);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  text-align: left;
+  transition: all 0.15s ease;
+  cursor: pointer;
+}
+
+.listCard:hover {
+  border-color: var(--border-hover);
+  background: #1f1f1f;
+}
+
+.listCardActive {
+  border-color: #FFD600 !important;
+  background: rgba(255, 214, 0, 0.06) !important;
+}
+
+.listIcon {
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.listText {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.listLabel {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.listDesc {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.listCheck {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+/* Section */
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sectionLabel {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.optional {
+  color: var(--text-dim);
+  text-transform: none;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+/* Chips (dietary) */
+.chipGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  padding: 8px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 100px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-muted);
+  background: var(--bg-input);
+  transition: all 0.15s ease;
+  cursor: pointer;
+}
+
+.chip:hover {
+  border-color: var(--border-hover);
+  color: var(--text);
+}
+
+.chipActive {
+  border-color: #FFD600 !important;
+  color: #FFD600 !important;
+  background: rgba(255, 214, 0, 0.08) !important;
+}
+
+/* Hours grid */
+.hoursGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.hourBtn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 16px 8px;
+  background: var(--bg-input);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.hourBtn:hover {
+  border-color: var(--border-hover);
+  background: #1f1f1f;
+}
+
+.hourBtnActive {
+  border-color: #FFD600 !important;
+  background: rgba(255, 214, 0, 0.08) !important;
+}
+
+.hourNum {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+.hourBtnActive .hourNum {
+  color: #FFD600;
+}
+
+.hourSub {
+  font-size: 10px;
+  color: var(--text-dim);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* Availability hint */
+.availability {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  background: rgba(255, 214, 0, 0.06);
+  border: 1px solid rgba(255, 214, 0, 0.2);
+  border-radius: var(--radius);
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.5;
+  animation: fadeSlideIn 0.2s ease;
+}
+
+.availIcon {
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+/* Nav */
+.nextBtn {
+  width: 100%;
+  padding: 16px 24px;
+  background: #FFD600;
+  color: #0d0d0d;
+  font-size: 15px;
+  font-weight: 700;
+  border-radius: var(--radius);
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 54px;
+}
+
+.nextBtn:hover:not(:disabled) {
+  background: #ffe433;
+  box-shadow: 0 0 24px rgba(255, 214, 0, 0.45), 0 0 50px rgba(255, 214, 0, 0.12);
+  transform: translateY(-1px);
+}
+
+.nextBtn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.nextBtn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(13, 13, 13, 0.3);
+  border-top-color: #0d0d0d;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.skipHint {
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+/* Responsive */
+@media (max-width: 560px) {
+  .stepContent {
+    padding: 24px 16px;
+  }
+
+  .cardGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .triGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .hoursGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .twoGrid {
+    grid-template-columns: 1fr;
+  }
+}
