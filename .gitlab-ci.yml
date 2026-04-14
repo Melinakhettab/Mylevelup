@@ -1,0 +1,11 @@
+﻿stages:
+  - build
+
+build:frontend:
+  stage: build
+  image: node:20
+  script:
+    - cd frontend && npm ci && npm run build
+  only:
+    - main
+    - develop

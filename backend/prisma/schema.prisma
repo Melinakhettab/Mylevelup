@@ -1,0 +1,50 @@
+﻿generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int       @id @default(autoincrement())
+  email     String    @unique
+  password  String
+  profile   Profile?
+  programs  Program[]
+  points    Points?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Profile {
+  id           Int      @id @default(autoincrement())
+  userId       Int      @unique
+  age          Int
+  weight       Float
+  height       Float
+  objective    String
+  level        String
+  equipment    String
+  dietary      String[]
+  hoursPerWeek Int
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Program {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  type      String
+  content   Json
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+}
+
+model Points {
+  id     Int  @id @default(autoincrement())
+  userId Int  @unique
+  total  Int  @default(0)
+  streak Int  @default(0)
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
