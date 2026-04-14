@@ -1,0 +1,53 @@
+﻿stages:
+  - lint
+  - test
+  - build
+  - version
+
+lint:backend:
+  stage: lint
+  image: node:20
+  script:
+    - cd backend && npm ci && npm run lint
+
+lint:frontend:
+  stage: lint
+  image: node:20
+  script:
+    - cd frontend && npm ci && npm run lint
+
+test:backend:
+  stage: test
+  image: node:20
+  script:
+    - cd backend && npm ci && npm test -- --coverage
+  coverage: '/Lines\s*:\s*(\d+\.?\d*)%/'
+
+test:frontend:
+  stage: test
+  image: node:20
+  script:
+    - cd frontend && npm ci && npm test
+
+build:frontend:
+  stage: build
+  image: node:20
+  script:
+    - cd frontend && npm ci && npm run build
+  artifacts:
+    paths:
+      - frontend/dist/
+  only:
+    - main
+    - develop
+
+version:
+  stage: version
+  image: node:20
+  script:
+    - git config user.email 'ci@my-levelup.com'
+    - git config user.name 'GitLab CI'
+    - npx standard-version --no-verify
+    - git push --follow-tags origin main
+  only:
+    - main
