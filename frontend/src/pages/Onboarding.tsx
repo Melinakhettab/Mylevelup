@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useOnboardingStore, type Objective, type Level, type Equipment, type Dietary } from '../store/onboardingStore'
+import { useAuthStore } from '../store/authStore'
+import { createProfile } from '../services/profile.service'
 import styles from './Onboarding.module.css'
 
 // ─── Step definitions ───────────────────────────────────────────────────────
@@ -337,7 +339,9 @@ function isStepValid(step: number, profileData: ReturnType<typeof useOnboardingS
 export default function Onboarding() {
   const navigate = useNavigate()
   const { step, profileData, nextStep, prevStep } = useOnboardingStore()
+  const setHasProfile = useAuthStore((s) => s.setHasProfile)
   const [submitting, setSubmitting] = useState(false)
+  const [apiError, setApiError] = useState('')
 
   const valid = isStepValid(step, profileData)
 
@@ -346,11 +350,31 @@ export default function Onboarding() {
     if (step < TOTAL_STEPS - 1) {
       nextStep()
     } else {
-      // Final submission
+      // Final submission — create profile via API
       setSubmitting(true)
-      await new Promise((r) => setTimeout(r, 800))
-      setSubmitting(false)
-      navigate('/dashboard')
+      setApiError('')
+      try {
+        await createProfile({
+          firstName: profileData.firstName,
+          age: profileData.age as number,
+          weight: profileData.weight as number,
+          height: profileData.height as number,
+          objective: profileData.objective as string,
+          level: profileData.level as string,
+          equipment: profileData.equipment as string,
+          dietary: profileData.dietary,
+          hoursPerWeek: profileData.hoursPerWeek as number,
+        })
+        setHasProfile(true)
+        navigate('/dashboard')
+      } catch (err: unknown) {
+        const msg =
+          (err as { response?: { data?: { error?: string } } })?.response?.data?.error ||
+          'Erreur lors de la création du profil'
+        setApiError(msg)
+      } finally {
+        setSubmitting(false)
+      }
     }
   }
 
@@ -417,6 +441,11 @@ export default function Onboarding() {
             'Continuer'
           )}
         </button>
+
+        {/* API error */}
+        {apiError && (
+          <p className={styles.skipHint} style={{ color: '#ff4444' }}>{apiError}</p>
+        )}
 
         {/* Skip hint */}
         {step === 4 && (

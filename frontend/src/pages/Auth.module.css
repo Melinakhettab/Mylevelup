@@ -185,6 +185,17 @@
   font-weight: 500;
 }
 
+.errorBanner {
+  padding: 12px 16px;
+  background: rgba(255, 68, 68, 0.1);
+  border: 1px solid rgba(255, 68, 68, 0.3);
+  border-radius: var(--radius);
+  color: #ff6666;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
 /* Submit */
 .btnSubmit {
   margin-top: 8px;

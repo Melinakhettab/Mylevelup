@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useOnboardingStore } from '../store/onboardingStore'
+import { useAuthStore } from '../store/authStore'
+import { registerUser } from '../services/auth.service'
 import styles from './Auth.module.css'
 
 interface FormState {
@@ -18,6 +20,7 @@ interface Errors {
 export default function Register() {
   const navigate = useNavigate()
   const setRegisterData = useOnboardingStore((s) => s.setRegisterData)
+  const setAuth = useAuthStore((s) => s.setAuth)
 
   const [form, setForm] = useState<FormState>({
     email: '',
@@ -25,6 +28,7 @@ export default function Register() {
     confirmPassword: '',
   })
   const [errors, setErrors] = useState<Errors>({})
+  const [apiError, setApiError] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
 
@@ -47,12 +51,21 @@ export default function Register() {
     e.preventDefault()
     if (!validate()) return
 
+    setApiError('')
     setLoading(true)
-    // Simulate async (future API call)
-    await new Promise((r) => setTimeout(r, 600))
-    setRegisterData({ email: form.email, password: form.password })
-    setLoading(false)
-    navigate('/onboarding')
+    try {
+      const data = await registerUser(form.email, form.password)
+      setAuth(data.token, data.user)
+      setRegisterData({ email: form.email, password: form.password })
+      navigate('/onboarding')
+    } catch (err: unknown) {
+      const msg =
+        (err as { response?: { data?: { error?: string } } })?.response?.data?.error ||
+        'Erreur lors de l\'inscription'
+      setApiError(msg)
+    } finally {
+      setLoading(false)
+    }
   }
 
   const getPasswordStrength = () => {
@@ -95,6 +108,8 @@ export default function Register() {
           <h1 className={styles.title}>Créer un compte</h1>
           <p className={styles.subtitle}>Rejoins ta communauté et commence ton aventure</p>
         </div>
+
+        {apiError && <div className={styles.errorBanner}>{apiError}</div>}
 
         {/* Form */}
         <form onSubmit={handleSubmit} className={styles.form} noValidate>
