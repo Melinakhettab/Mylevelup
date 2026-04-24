@@ -115,7 +115,11 @@ export default function Dashboard() {
             </svg>
             <span className={styles.logoText}>MY LEVELUP</span>
           </div>
-          <button className={styles.logoutBtn} onClick={handleLogout}>Déconnexion</button>
+          <div className={styles.headerActions}>
+            <button className={styles.navBtn} onClick={() => navigate('/leaderboard')}>Classement</button>
+            <button className={styles.navBtn} onClick={() => navigate('/profile')}>Profil</button>
+            <button className={styles.logoutBtn} onClick={handleLogout}>Déconnexion</button>
+          </div>
         </div>
 
         {/* Welcome */}

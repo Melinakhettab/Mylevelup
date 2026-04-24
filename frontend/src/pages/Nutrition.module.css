@@ -16,6 +16,21 @@
   mask-image: radial-gradient(ellipse 80% 60% at 50% 20%, black 10%, transparent 100%);
 }
 
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 214, 0, 0); }
+  50%       { box-shadow: 0 0 16px 4px rgba(255, 214, 0, 0.25); }
+}
+
 .container {
   position: relative;
   z-index: 1;
@@ -24,6 +39,7 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
+  animation: fadeInUp 0.35s ease both;
 }
 
 .topBar {
@@ -145,7 +161,12 @@
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 6px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
 }
+
+.dayTabs::-webkit-scrollbar { display: none; }
 
 .dayTab {
   display: flex;
@@ -187,6 +208,10 @@
 
 .dayPanel {
   animation: fadeSlideIn 0.2s ease;
+}
+
+.tabContent {
+  animation: fadeIn 0.25s ease both;
 }
 
 @keyframes fadeSlideIn {
@@ -234,10 +259,14 @@
   border: 1px solid var(--border);
   border-radius: 12px;
   overflow: hidden;
-  transition: border-color 0.15s;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s;
 }
 
-.mealCard:hover { border-color: var(--border-hover); }
+.mealCard:hover {
+  border-color: var(--border-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(255, 214, 0, 0.08);
+}
 
 .mealHeader {
   width: 100%;
@@ -481,6 +510,7 @@
   justify-content: center;
   min-width: 240px;
   min-height: 50px;
+  animation: pulseGlow 2s ease-in-out infinite;
 }
 
 .generateBtn:hover:not(:disabled) {
@@ -509,11 +539,13 @@
 @keyframes spin { to { transform: rotate(360deg); } }
 
 @media (max-width: 480px) {
+  .container { padding: 16px; }
   .dayTabs { gap: 4px; }
-  .dayTab { padding: 8px 2px; }
+  .dayTab { min-width: 44px; padding: 8px 2px; }
   .dayTabLabel { font-size: 10px; }
   .dayTabCal { display: none; }
   .summaryRow { grid-template-columns: repeat(2, 1fr); }
+  .tabs { overflow-x: auto; -webkit-overflow-scrolling: touch; }
   .mealMacros { gap: 4px; }
   .macroBadge { font-size: 9px; }
 }

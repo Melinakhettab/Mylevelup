@@ -16,6 +16,16 @@
   mask-image: radial-gradient(ellipse 80% 80% at 50% 30%, black 10%, transparent 100%);
 }
 
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 214, 0, 0); }
+  50%       { box-shadow: 0 0 16px 4px rgba(255, 214, 0, 0.25); }
+}
+
 .container {
   position: relative;
   z-index: 1;
@@ -24,6 +34,7 @@
   display: flex;
   flex-direction: column;
   gap: 24px;
+  animation: fadeInUp 0.35s ease both;
 }
 
 .header {
@@ -43,6 +54,27 @@
   font-weight: 800;
   letter-spacing: 0.1em;
   color: #FFD600;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.navBtn {
+  font-size: 12px;
+  font-weight: 600;
+  color: #FFD600;
+  padding: 6px 12px;
+  border: 1px solid rgba(255, 214, 0, 0.3);
+  border-radius: var(--radius);
+  transition: all 0.15s;
+}
+
+.navBtn:hover {
+  border-color: rgba(255, 214, 0, 0.6);
+  background: rgba(255, 214, 0, 0.06);
 }
 
 .logoutBtn {
@@ -97,6 +129,8 @@
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 10px;
+  animation: fadeInUp 0.35s ease both;
+  animation-delay: 0.05s;
 }
 
 .profileCard {
@@ -142,6 +176,8 @@
   text-align: left;
   cursor: pointer;
   transition: all 0.2s ease;
+  animation: fadeInUp 0.35s ease both;
+  animation-delay: 0.15s;
 }
 
 .programCard:hover {
@@ -232,6 +268,8 @@
   align-items: center;
   text-align: center;
   gap: 12px;
+  animation: fadeInUp 0.35s ease both;
+  animation-delay: 0.15s;
 }
 
 .generateIcon { font-size: 40px; }
@@ -263,6 +301,7 @@
   justify-content: center;
   min-width: 220px;
   min-height: 50px;
+  animation: pulseGlow 2s ease-in-out infinite;
 }
 
 .generateBtn:hover:not(:disabled) {
@@ -297,6 +336,8 @@
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 10px;
+  animation: fadeInUp 0.35s ease both;
+  animation-delay: 0.10s;
 }
 
 .statCard {
@@ -335,6 +376,8 @@
 }
 
 @media (max-width: 480px) {
-  .profileGrid { grid-template-columns: 1fr; }
-  .statsGrid { grid-template-columns: repeat(2, 1fr); }
+  .container { padding: 16px; }
+  .profileGrid { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .statsGrid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .welcomeTitle { font-size: 1.4rem; }
 }

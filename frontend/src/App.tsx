@@ -8,6 +8,8 @@ import Onboarding from './pages/Onboarding'
 import Dashboard from './pages/Dashboard'
 import Program from './pages/Program'
 import Nutrition from './pages/Nutrition'
+import Leaderboard from './pages/Leaderboard'
+import ProfilePage from './pages/Profile'
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
@@ -39,6 +41,8 @@ export default function App() {
         <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
         <Route path="/program" element={<ProtectedRoute><Program /></ProtectedRoute>} />
         <Route path="/nutrition" element={<ProtectedRoute><Nutrition /></ProtectedRoute>} />
+        <Route path="/leaderboard" element={<ProtectedRoute><Leaderboard /></ProtectedRoute>} />
+        <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
