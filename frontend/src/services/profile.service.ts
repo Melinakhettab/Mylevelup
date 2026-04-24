@@ -12,13 +12,22 @@ export interface ProfilePayload {
   hoursPerWeek: number
 }
 
-export interface Profile extends ProfilePayload {
+export interface Profile {
   id: number
   userId: number
+  firstName: string | null
+  age: number
   gender: string
-  bmi: number
-  bmr: number
-  tdee: number
+  heightCm: number
+  weightKg: number
+  goal: string
+  fitnessLevel: string
+  weeklyAvailability: number
+  equipment: string
+  dietaryRestrictions: string[]
+  bmi: number | null
+  bmr: number | null
+  tdee: number | null
   updatedAt: string
 }
 

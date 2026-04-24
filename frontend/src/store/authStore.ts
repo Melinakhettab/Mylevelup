@@ -30,24 +30,30 @@ export const useAuthStore = create<AuthStore>((set) => ({
     set({ token, user, isAuthenticated: true })
   },
 
-  setHasProfile: (v) => set({ hasProfile: v }),
+  setHasProfile: (v) => {
+    localStorage.setItem('hasProfile', JSON.stringify(v))
+    set({ hasProfile: v })
+  },
 
   logout: () => {
     localStorage.removeItem('token')
     localStorage.removeItem('user')
+    localStorage.removeItem('hasProfile')
     set({ token: null, user: null, isAuthenticated: false, hasProfile: false })
   },
 
   hydrate: () => {
     const token = localStorage.getItem('token')
     const userStr = localStorage.getItem('user')
+    const hasProfile = localStorage.getItem('hasProfile') === 'true'
     if (token && userStr) {
       try {
         const user = JSON.parse(userStr) as AuthUser
-        set({ token, user, isAuthenticated: true })
+        set({ token, user, isAuthenticated: true, hasProfile })
       } catch {
         localStorage.removeItem('token')
         localStorage.removeItem('user')
+        localStorage.removeItem('hasProfile')
       }
     }
   },

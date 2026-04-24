@@ -1,23 +1,100 @@
-import { useOnboardingStore } from '../store/onboardingStore'
+import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useAuthStore } from '../store/authStore'
+import { getProfile, type Profile } from '../services/profile.service'
+import { getCurrentProgram, generateProgram, type ProgramData } from '../services/program.service'
+import { getCurrentNutrition, type NutritionData } from '../services/nutrition.service'
+import { getPoints } from '../services/session.service'
+import { useProgramStore } from '../store/programStore'
+import { useSessionStore } from '../store/sessionStore'
 import styles from './Dashboard.module.css'
 
+const objectiveLabels: Record<string, string> = {
+  perte_poids: 'Perte de poids',
+  prise_masse: 'Prise de masse',
+  forme: 'Remise en forme',
+  remise_en_forme: 'Remise en forme',
+  maintien: 'Maintien',
+  performance: 'Performance',
+}
+
+const levelLabels: Record<string, string> = {
+  debutant: 'Débutant',
+  intermediaire: 'Intermédiaire',
+  avance: 'Avancé',
+}
+
 export default function Dashboard() {
-  const { profileData } = useOnboardingStore()
-  const name = profileData.firstName || 'Champion'
+  const navigate = useNavigate()
+  const logout = useAuthStore((s) => s.logout)
+  const setProgram = useProgramStore((s) => s.setProgram)
+  const { points, streak, setPoints } = useSessionStore()
 
-  const objectiveLabels: Record<string, string> = {
-    perte_poids: 'Perte de poids',
-    prise_masse: 'Prise de masse',
-    remise_en_forme: 'Remise en forme',
-    maintien: 'Maintien',
-    performance: 'Performance',
+  const [profile, setProfile] = useState<Profile | null>(null)
+  const [program, setProgramLocal] = useState<ProgramData | null>(null)
+  const [nutrition, setNutritionLocal] = useState<NutritionData | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [generating, setGenerating] = useState(false)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    let cancelled = false
+    Promise.all([
+      getProfile().catch(() => null),
+      getCurrentProgram().catch(() => null),
+      getPoints().catch(() => null),
+      getCurrentNutrition().catch(() => null),
+    ]).then(([p, prog, pts, nutr]) => {
+      if (cancelled) return
+      setProfile(p)
+      setProgramLocal(prog)
+      if (prog) setProgram(prog)
+      if (pts) setPoints(pts.total, pts.streak)
+      setNutritionLocal(nutr)
+    }).finally(() => {
+      if (!cancelled) setLoading(false)
+    })
+    return () => { cancelled = true }
+  }, [setProgram, setPoints])
+
+  const handleGenerate = async () => {
+    setGenerating(true)
+    setError('')
+    try {
+      const data = await generateProgram()
+      setProgramLocal(data)
+      setProgram(data)
+      navigate('/program')
+    } catch (err: unknown) {
+      const msg =
+        (err as { response?: { data?: { error?: string } } })?.response?.data?.error ||
+        'Erreur lors de la génération'
+      setError(msg)
+    } finally {
+      setGenerating(false)
+    }
   }
 
-  const levelLabels: Record<string, string> = {
-    debutant: 'Débutant',
-    intermediaire: 'Intermédiaire',
-    avance: 'Avancé',
+  const handleLogout = () => {
+    logout()
+    navigate('/')
   }
+
+  const name = profile?.firstName || 'Champion'
+
+  if (loading) {
+    return (
+      <main className={styles.page}>
+        <div className={styles.grid} aria-hidden="true" />
+        <div className={styles.loadingWrap}><span className={styles.spinner} /></div>
+      </main>
+    )
+  }
+
+  // Count training days
+  const trainingDays = program?.program
+    ? (program.program as Array<{ type: string }>).filter((d) => d.type !== 'repos').length
+    : 0
 
   return (
     <main className={styles.page}>
@@ -38,73 +115,124 @@ export default function Dashboard() {
             </svg>
             <span className={styles.logoText}>MY LEVELUP</span>
           </div>
-          <div className={styles.xpBadge}>
-            <span>⚡</span> Niveau 1
-          </div>
+          <button className={styles.logoutBtn} onClick={handleLogout}>Déconnexion</button>
         </div>
 
         {/* Welcome */}
         <div className={styles.welcome}>
           <h1 className={styles.welcomeTitle}>
-            Bienvenue, <span className={styles.accent}>{name}</span> ! 🎉
+            Salut, <span className={styles.accent}>{name}</span> 👋
           </h1>
           <p className={styles.welcomeSub}>
-            Ton profil est créé. Ton programme personnalisé va être généré.
+            {program ? 'Ton programme est prêt. Let\'s go !' : 'Prêt à commencer ton entraînement ?'}
           </p>
         </div>
 
+        {/* Error */}
+        {error && <div className={styles.errorBanner}>{error}</div>}
+
         {/* Profile summary */}
-        <div className={styles.profileGrid}>
-          {profileData.objective && (
+        {profile && (
+          <div className={styles.profileGrid}>
             <div className={styles.profileCard}>
               <span className={styles.profileIcon}>🎯</span>
               <div>
                 <p className={styles.profileLabel}>Objectif</p>
-                <p className={styles.profileValue}>{objectiveLabels[profileData.objective]}</p>
+                <p className={styles.profileValue}>{objectiveLabels[profile.goal] || profile.goal}</p>
               </div>
             </div>
-          )}
-          {profileData.level && (
             <div className={styles.profileCard}>
               <span className={styles.profileIcon}>📊</span>
               <div>
                 <p className={styles.profileLabel}>Niveau</p>
-                <p className={styles.profileValue}>{levelLabels[profileData.level]}</p>
+                <p className={styles.profileValue}>{levelLabels[profile.fitnessLevel] || profile.fitnessLevel}</p>
               </div>
             </div>
-          )}
-          {profileData.hoursPerWeek !== '' && (
-            <div className={styles.profileCard}>
-              <span className={styles.profileIcon}>⏱️</span>
-              <div>
-                <p className={styles.profileLabel}>Disponibilités</p>
-                <p className={styles.profileValue}>{profileData.hoursPerWeek}h / semaine</p>
-              </div>
-            </div>
-          )}
-          {profileData.equipment && (
-            <div className={styles.profileCard}>
-              <span className={styles.profileIcon}>{profileData.equipment === 'salle' ? '🏋️' : '🏠'}</span>
-              <div>
-                <p className={styles.profileLabel}>Entraînement</p>
-                <p className={styles.profileValue}>{profileData.equipment === 'salle' ? 'En salle' : 'À domicile'}</p>
-              </div>
-            </div>
-          )}
-        </div>
+          </div>
+        )}
 
-        {/* Coming soon */}
-        <div className={styles.comingSoon}>
-          <div className={styles.csIcon}>🚀</div>
-          <h2 className={styles.csTitle}>Programme en cours de génération…</h2>
-          <p className={styles.csSub}>
-            Notre IA prépare ton planning d'entraînement et ton plan nutritionnel.
-            Reviens dans quelques instants.
-          </p>
-          <div className={styles.loadingBar}>
-            <div className={styles.loadingFill} />
+        {/* Stats: points & streak */}
+        <div className={styles.statsGrid}>
+          <div className={styles.statCard}>
+            <span className={styles.statIcon}>⚡</span>
+            <p className={styles.statLabel}>Points</p>
+            <p className={styles.statValue}>{points}</p>
+          </div>
+          <div className={styles.statCard}>
+            <span className={styles.statIcon}>🔥</span>
+            <p className={styles.statLabel}>Streak</p>
+            <p className={styles.statValue}>{streak} jour{streak !== 1 ? 's' : ''}</p>
           </div>
         </div>
+
+        {/* Program card */}
+        {program ? (
+          <button className={styles.programCard} onClick={() => navigate('/program')}>
+            <div className={styles.programHeader}>
+              <span className={styles.programIcon}>📋</span>
+              <div>
+                <h2 className={styles.programTitle}>Programme de la semaine</h2>
+                <p className={styles.programMeta}>
+                  {trainingDays} séances · {7 - trainingDays} repos
+                </p>
+              </div>
+            </div>
+            <div className={styles.programPreview}>
+              {(program.program as Array<{ day: number; type: string; dayName: string }>).map((d) => (
+                <div
+                  key={d.day}
+                  className={`${styles.previewDot} ${d.type !== 'repos' ? styles.previewDotActive : ''}`}
+                  title={d.dayName}
+                >
+                  {d.type === 'repos' ? '·' : '●'}
+                </div>
+              ))}
+            </div>
+            <span className={styles.programCta}>Voir le programme →</span>
+          </button>
+        ) : (
+          <div className={styles.generateCard}>
+            <span className={styles.generateIcon}>💪</span>
+            <h2 className={styles.generateTitle}>Génère ton programme</h2>
+            <p className={styles.generateSub}>
+              Notre IA va créer un programme hebdomadaire adapté à ton profil.
+            </p>
+            <button
+              className={styles.generateBtn}
+              onClick={handleGenerate}
+              disabled={generating}
+            >
+              {generating ? <span className={styles.spinner} /> : 'Générer mon programme'}
+            </button>
+          </div>
+        )}
+
+        {/* Nutrition card */}
+        {nutrition ? (
+          <button className={styles.nutritionCard} onClick={() => navigate('/nutrition')}>
+            <div className={styles.programHeader}>
+              <span className={styles.programIcon}>🥗</span>
+              <div>
+                <h2 className={styles.programTitle}>Plan nutritionnel</h2>
+                <p className={styles.programMeta}>
+                  {Math.round(nutrition.weeklyCalories / 7)} kcal / jour · 7 jours
+                </p>
+              </div>
+            </div>
+            <span className={styles.programCta}>Voir le plan →</span>
+          </button>
+        ) : (
+          <button className={styles.nutritionCard} onClick={() => navigate('/nutrition')}>
+            <div className={styles.programHeader}>
+              <span className={styles.programIcon}>🥗</span>
+              <div>
+                <h2 className={styles.programTitle}>Plan nutritionnel</h2>
+                <p className={styles.programMeta}>Aucun plan actif</p>
+              </div>
+            </div>
+            <span className={styles.programCta}>Générer un plan →</span>
+          </button>
+        )}
       </div>
     </main>
   )
