@@ -12,14 +12,6 @@ services:
         value: 24h
       - key: OPENROUTER_MODEL
         value: meta-llama/llama-3.3-70b-instruct:free
-      - key: DATABASE_URL
-        generateValue: false
-      - key: JWT_SECRET
-        generateValue: false
-      - key: OPENROUTER_API_KEY
-        generateValue: false
-      - key: FRONTEND_URL
-        generateValue: false
 
   - type: web
     name: my-levelup
@@ -31,6 +23,3 @@ services:
       - type: rewrite
         source: /*
         destination: /index.html
-    envVars:
-      - key: VITE_API_URL
-        generateValue: false
