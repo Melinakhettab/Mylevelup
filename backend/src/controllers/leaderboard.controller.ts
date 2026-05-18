@@ -14,7 +14,7 @@ export async function getLeaderboard(req: Request, res: Response) {
     },
   })
 
-  const topMapped = top.map((entry, index) => ({
+  const topMapped = top.map((entry: typeof top[0], index: number) => ({
     rank: index + 1,
     userId: entry.userId,
     firstName: entry.user.profile?.firstName ?? 'Anonyme',
