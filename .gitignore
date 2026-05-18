@@ -9,3 +9,10 @@ logs/
 .DS_Store
 Thumbs.db
 coverage/
+
+# Runtime databases (not versioned)
+*.db
+*.db-shm
+*.db-wal
+ruvector.db
+.swarm/memory.db*
