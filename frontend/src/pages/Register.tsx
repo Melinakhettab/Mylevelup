@@ -59,8 +59,11 @@ export default function Register() {
       setRegisterData({ email: form.email, password: form.password })
       navigate('/onboarding')
     } catch (err: unknown) {
+      const axiosErr = err as { response?: { data?: { error?: string; message?: string } }; message?: string }
       const msg =
-        (err as { response?: { data?: { error?: string } } })?.response?.data?.error ||
+        axiosErr?.response?.data?.error ||
+        axiosErr?.response?.data?.message ||
+        axiosErr?.message ||
         'Erreur lors de l\'inscription'
       setApiError(msg)
     } finally {
