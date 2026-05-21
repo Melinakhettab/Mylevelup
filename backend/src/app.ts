@@ -9,10 +9,26 @@ const app = express()
 
 // ─── Security & parsing ─────────────────────────────────────────────────────
 app.use(helmet())
+// En prod : accepte FRONTEND_URL + toujours railway.app en fallback
+const allowedOrigins = env.NODE_ENV === 'production'
+  ? [
+      process.env.FRONTEND_URL,
+      'https://my-levelup-production.up.railway.app',
+      'https://my-levelup.up.railway.app',
+    ].filter(Boolean) as string[]
+  : ['http://localhost:5173', 'http://localhost:3000']
+
 app.use(cors({
-  origin: env.NODE_ENV === 'production'
-    ? (process.env.FRONTEND_URL || true)
-    : ['http://localhost:5173', 'http://localhost:3000'],
+  origin: (origin, callback) => {
+    // Autorise les requêtes sans origin (Postman, curl, etc.)
+    if (!origin) return callback(null, true)
+    if (allowedOrigins.includes(origin)) return callback(null, true)
+    // En prod, log le refus pour debug
+    if (env.NODE_ENV === 'production') {
+      console.warn(`⚠️ CORS refusé pour origin: ${origin}`)
+    }
+    callback(new Error(`CORS: origin ${origin} non autorisée`))
+  },
   credentials: true,
 }))
 app.use(express.json({ limit: '1mb' }))
