@@ -35,9 +35,7 @@ export async function generateSportsProgram(profile: ProfileContext): Promise<Va
 
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     try {
-      if (env.NODE_ENV === 'development') {
-        console.log(`🤖 Generating program via OpenRouter (${env.OPENROUTER_MODEL}) — attempt ${attempt}/${maxAttempts}...`)
-      }
+      console.log(`🤖 Generating program via OpenRouter (${env.OPENROUTER_MODEL}) — attempt ${attempt}/${maxAttempts}...`)
 
       const completion = await client.chat.completions.create({
         model: env.OPENROUTER_MODEL,
@@ -60,25 +58,19 @@ export async function generateSportsProgram(profile: ProfileContext): Promise<Va
         throw new Error('Réponse vide de l\'IA')
       }
 
-      if (env.NODE_ENV === 'development') {
-        console.log('📥 OpenRouter raw response (first 500 chars):', content.slice(0, 500))
-      }
+      console.log('📥 OpenRouter raw response (first 500 chars):', content.slice(0, 500))
 
       let validated: ValidatedProgram
       try {
         validated = validateProgramResponse(content)
       } catch (validationErr) {
-        if (env.NODE_ENV === 'development') {
-          console.error('❌ Zod validation failed. Full raw content:')
-          console.error(content)
-        }
+        console.error('❌ Zod validation failed. Full raw content:')
+        console.error(content)
         throw validationErr
       }
 
-      if (env.NODE_ENV === 'development') {
-        const trainingDays = validated.program.filter(d => d.type !== 'repos').length
-        console.log(`✅ Program generated: ${trainingDays} training days, ${7 - trainingDays} rest days`)
-      }
+      const trainingDays = validated.program.filter(d => d.type !== 'repos').length
+      console.log(`✅ Program generated: ${trainingDays} training days, ${7 - trainingDays} rest days`)
 
       return validated
 
@@ -87,9 +79,7 @@ export async function generateSportsProgram(profile: ProfileContext): Promise<Va
         const message = err instanceof Error ? err.message : 'Erreur inconnue'
         throw new AppError(`Échec de génération du programme: ${message}`, 502)
       }
-      if (env.NODE_ENV === 'development') {
-        console.warn(`⚠️ Attempt ${attempt} failed, retrying...`, (err as Error).message)
-      }
+      console.warn(`⚠️ Attempt ${attempt} failed, retrying...`, (err as Error).message)
     }
   }
 
