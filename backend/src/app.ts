@@ -11,7 +11,7 @@ const app = express()
 app.use(helmet())
 app.use(cors({
   origin: env.NODE_ENV === 'production'
-    ? process.env.FRONTEND_URL
+    ? (process.env.FRONTEND_URL || true)
     : ['http://localhost:5173', 'http://localhost:3000'],
   credentials: true,
 }))
@@ -32,12 +32,10 @@ app.use((_req: Request, res: Response) => {
 
 // ─── Global error handler ───────────────────────────────────────────────────
 app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
-  // Log in development
-  if (env.NODE_ENV === 'development') {
-    console.error('❌ Error:', err.message)
-    if (!(err instanceof AppError)) {
-      console.error(err.stack)
-    }
+  // Always log errors so Railway captures them
+  console.error('❌ Error:', err.message)
+  if (!(err instanceof AppError)) {
+    console.error(err.stack)
   }
 
   if (err instanceof AppError) {
