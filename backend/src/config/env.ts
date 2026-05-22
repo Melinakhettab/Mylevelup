@@ -8,7 +8,7 @@ export const env = {
   JWT_SECRET: process.env.JWT_SECRET || 'dev-secret-change-in-production',
   JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || '24h',
   OPENROUTER_API_KEY: process.env.OPENROUTER_API_KEY || '',
-  OPENROUTER_MODEL: process.env.OPENROUTER_MODEL || 'deepseek/deepseek-chat-v3-0324:free',
+  OPENROUTER_MODEL: process.env.OPENROUTER_MODEL || 'google/gemma-3-27b-it:free',
 } as const
 
 export function validateEnv(): void {
