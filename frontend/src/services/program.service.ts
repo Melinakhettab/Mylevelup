@@ -31,7 +31,8 @@ interface ProgramResponse {
 }
 
 export async function generateProgram(): Promise<ProgramData> {
-  const { data } = await api.post<ProgramResponse>('/programs/generate')
+  // Timeout plus long pour la génération IA (peut prendre jusqu'à 2 min sur les modèles gratuits)
+  const { data } = await api.post<ProgramResponse>('/programs/generate', {}, { timeout: 180000 })
   return data.data!
 }
 
